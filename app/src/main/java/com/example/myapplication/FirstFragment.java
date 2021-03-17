@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -37,6 +38,9 @@ public class FirstFragment extends Fragment {
     final byte[] INIT = {0x1b, 0x40};
     final byte[] BEEPER = {0x1b,0x42,0x05,0x09};
     final byte[] TXT_BOLD_ON= {0x1b,0x45,0x01};
+    final byte[] LEFT_MARGIN = {0x1b, 0x6c, 3};
+    final byte[] LINE_SPACE_1_360_INCH = {0x1b, 0x2b, 1};
+    final byte[] LINE_SPACE_1_6_INCH = {0x1b, 0x32};
 
     BluetoothAdapter mBluetoothAdapter;
     BluetoothSocket mmSocket;
@@ -178,67 +182,37 @@ public class FirstFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                String header = "Please present this receipt at the collection " +
-                        "counter when your number is displayed\n";
-                String order = "Your order number is\n";
-                String orderNumber = "A139\n\n";
-                String foodCounter = "Western";
+                String milkTeaBrand = "Gong Cha ";
+                String orderNumber = "00007686\n";
+                String orderInfoChinese = "Alt Text";
+                String orderInfo1 = "GCM Alisan Tea";
+                String orderInfo2 = "5 X Pearl Jelly";
+                String orderInfo3 = "3S";
                 StringBuilder detail = new StringBuilder();
 
                 findBluetooth();
                 openBluetooth();
 
-                outputStream.write(ALIGN_CENTER);
-                outputStream.write(TXT_BOLD_ON);
-                outputStream.write(header.getBytes("GBK"));                      //when printing text, "write()" will print before "println()"
-                outputStream.write(new byte[]{0x0a});
-
-                outputStream.write(order.getBytes("GBK"));
-
-                outputStream.write(TEXT_SIZE_LARGE);
+                outputStream.write(LEFT_MARGIN);
+                outputStream.write(milkTeaBrand.getBytes("GBK"));                      //when printing text, "write()" will print before "println()"
                 outputStream.write(orderNumber.getBytes("GBK"));
+                outputStream.write(LINE_SPACE_1_360_INCH);
 
-                outputStream.write(TEXT_SIZE_NORMAL);
-                outputStream.write(foodCounter.getBytes("GBK"));
-
-                outputStream.write(new byte[]{0x0a});
-                outputStream.write(new byte[]{0x0a});
-
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
                 String currentDateTimeString = df.format(new Date());
-                detail.append("Bill No :                               389810\n");
-                detail.append("Date:   :                  " + currentDateTimeString + "\n");
+                detail.append(currentDateTimeString + "\n");
                 outputStream.write(detail.toString().getBytes("GBK"));
                 detail = new StringBuilder();
-                detail.append("Order Type :                           Dine_In\n");
-                detail.append("----------------------------------------------\n");
+                detail.append("______________________________\n");
                 outputStream.write(detail.toString().getBytes("GBK"));
-                detail = new StringBuilder();
-
-                detail.append("Sales Items\n");
-                detail.append("1. Black Pepper Grilled Chicken Chop   3.60 *1\n");
-                outputStream.write(detail.toString().getBytes("GBK"));
-                detail = new StringBuilder();
-                detail.append("25.Add Sunshine Egg                    0.60 *1\n");
-                detail.append("----------------------------------------------\n");
-                outputStream.write(detail.toString().getBytes("GBK"));
-                detail = new StringBuilder();
-
-                detail.append("Sub-Total Amount:                     SGD 4.20\n");
-                detail.append("Total Qty       :                            2\n");
-                outputStream.write(detail.toString().getBytes("GBK"));
-
-                detail = new StringBuilder();
-                detail.append("Total Payable   :                     SGD 4.20\n");
-                detail.append("Paid By         :  NETS (DBS OCBC UOB NETSPay)\n");
-
-                outputStream.write(detail.toString().getBytes("GBK"));
-                detail = new StringBuilder();
-
                 outputStream.write(new byte[]{0x0a});
 
-                detail.append("Thank You\n");
-                detail.append("Please come again\n");
+                outputStream.write(LINE_SPACE_1_6_INCH);
+                detail = new StringBuilder();
+                detail.append(orderInfoChinese + "\n");
+                detail.append(orderInfo1 + "\n");
+                detail.append(orderInfo2 + "\n");
+                detail.append(orderInfo3 + "\n");
 
                 outputStream.write(detail.toString().getBytes("GBK"));
 
